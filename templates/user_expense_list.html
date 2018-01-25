@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CRUD TABLE WITH FILE UPLOAD</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap-table.css">
+    <script src="/static/bootstrap/js/jquery.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-table.js"></script>
+</head>
+<body>
+<div class="container" style="overflow-x:auto;">
+    <table class="table" id="tbl">
+        <thead>
+        <tr>
+            <th data-field="category_id">Category ID</th>
+            <th data-field="category_name">Amount</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+
+<script>
+    var API_URL2 = 'http://' + location.host + '/get_user_expenses/';
+    $(function () {
+        $.post(API_URL2,
+                {user_id: "1"},
+                function (data) {
+                    var jsondata = data;
+                    $.each(data, function (i, option) {
+                        $('#tbl').append('<tr><td>' + option.category_id + '</td><td>' + option.amount + '</td></tr>');
+                    });
+                }
+        );
+    })
+</script>
+
+</body>
+</html>

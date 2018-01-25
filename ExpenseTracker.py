@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, request, Response, render_template
 import pgdb
 
 app = Flask(__name__)
@@ -19,6 +19,45 @@ app = Flask(__name__)
 #     dbconnection.close()
 #
 # create_table(dbconnection)
+
+
+
+
+@app.route('/')
+def IndexPage():
+    return render_template("login.html")
+
+
+@app.route('/register')
+def RegisterPage():
+    return render_template("register.html")
+
+@app.route('/add_category')
+def AddCategory():
+    return render_template("add_category.html")
+
+@app.route('/user_expenses')
+def UserExpenses():
+    return render_template("user_expense_list.html")
+
+
+@app.route('/category_list/', methods=['GET'])
+def Category_list():
+    json_category_list = []
+    dbconnection = pgdb.connect(host="localhost", user="postgres", password="qwerty123", database="expensetracker")
+    sql = """SELECT * from category;"""
+    cur = dbconnection.cursor()
+    cur.execute(sql)
+    category_list = cur.fetchall()
+    print(category_list)
+    for i in category_list:
+        json_category_list.append({
+            "category_id":i[0],
+            "category_name":i[1]
+        })
+    return Response(json.dumps(json_category_list),  mimetype='application/json')
+
+
 
 
 
@@ -61,23 +100,28 @@ def UserLogin():
     email_id = request.form['email_id']
     password = request.form['password']
     dbconnection = pgdb.connect(host="localhost", user="postgres", password="qwerty123", database="expensetracker")
-    sql = """SELECT email_id, password from users WHERE email_id = %s AND password=%s;"""
+    sql = """SELECT * from users WHERE email_id = %s AND password=%s;"""
     cur = dbconnection.cursor()
     data = (email_id, password)
-    datasome = cur.execute(sql, data)
-    if cur.fetchone():
+    cur.execute(sql, data)
+    result = cur.fetchone()
+    print(result)
+    if result:
         print("user exists")
         user_register_data = {
             "welcome": email_id,
         }
         dbconnection.close()
-        return jsonify(user_register_data)
+        return render_template("user_dashboard.html", user_id=result[0], username=result[1])
+
+        # return jsonify(user_register_data)
     else:
         print("not exists")
         user_register_data = {
             "username or password": "is incorrect",
         }
         dbconnection.close()
+        # return render_template("login.html")
         return jsonify(user_register_data)
 
 
@@ -95,7 +139,9 @@ def CreateCategory():
         "category_id": category_name
     }
     dbconnection.close()
-    return jsonify(category_data)
+    # return jsonify(category_data)
+    return render_template('add_category.html')
+
 
 
 @app.route('/create_expense/', methods=['POST'])
@@ -116,7 +162,7 @@ def CreateExpense():
         "amount": amount
     }
     dbconnection.close()
-    return jsonify(expense_data)
+    return render_template('user_dashboard.html')
 
 
 @app.route('/get_user_expenses/', methods=['POST'])
@@ -132,7 +178,7 @@ def GetUserExpenses():
     for i in results:
         user_expense_list.append({
             "category_id":i[0],
-            "amount":i[0]
+            "amount":i[1]
         })
     dbconnection.commit()
     dbconnection.close()
@@ -141,4 +187,4 @@ def GetUserExpenses():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0", port=8080, debug=True)

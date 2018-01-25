@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>User Dashboard</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h2 align="right">Hello {{ username }}</h2>
+    <br>
+    <div class="row">
+        <div class="col-xs-2">
+            <button class="create btn btn-default" href="javascript:"
+                    onclick="window.location.href='/add_category'">
+                Add
+                Category
+            </button>
+        </div>
+        <div class="col-xs-2">
+            <button class="create btn btn-default" href="javascript:"
+                    onclick="window.location.href='/user_expenses'">
+                List User Expenses
+            </button>
+        </div>
+    </div>
+    <h2>Add Expense</h2>
+    <form id="expenseform" action="/create_expense/" method="post">
+        <input type="hidden" class="form-control" id="user_id" name="user_id" value="{{ user_id }}">
+        <div class="form-group">
+            <label for="sel1">Select list:</label>
+            <select class="form-control" id="category_id" , name="category_id">
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Amount:</label>
+            <input type="text" class="form-control" id="amount" placeholder="Enter The Amount"
+                   name="amount" required>
+        </div>
+        <button type="submit" class="btn btn-default">Add</button>
+    </form>
+</div>
+<script>
+    var API_URL = 'http://' + location.host + '/category_list/';
+    $(function () {
+        $.getJSON(API_URL, function (data) {
+            console.log(data);
+            $.each(data, function (i, option) {
+                $('#category_id').append($('<option/>').attr("value", option.category_id).text(option.category_name));
+            });
+        });
+    })
+</script>
+</body>
+</html>

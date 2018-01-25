@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Add Category</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <h2>Add Category</h2>
+    <form id="expenseform" action="/create_category/" method="post">
+        <div class="form-group">
+            <label>Category Name:</label>
+            <input type="text" class="form-control" id="category_name" placeholder="Enter The Category Name"
+                   name="category_name" required>
+        </div>
+        <button type="submit" class="btn btn-default">Add</button>
+    </form>
+</div>
+<br><br>
+<div class="container" style="overflow-x:auto;">
+    <div class="table-responsive">
+        <table class="table" id="table">
+            <thead>
+            <tr>
+                <th>Category ID</th>
+                <th>Category Name</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<script>
+    var API_URL = 'http://' + location.host + '/category_list/';
+    $(function () {
+        $.getJSON(API_URL, function (data) {
+            console.log(data);
+            $.each(data, function (i, option) {
+                $('#table').append('<tr><td>' + option.category_id + '</td><td>' + option.category_name + '</td></tr>');
+            });
+        });
+    })
+</script>
+</body>
+</html>
